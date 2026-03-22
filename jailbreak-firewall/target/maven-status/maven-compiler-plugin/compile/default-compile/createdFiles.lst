@@ -1,0 +1,6 @@
+com/project/jailbreak_firewall/repository/LogRepository.class
+com/project/jailbreak_firewall/controller/PageController.class
+com/project/jailbreak_firewall/controller/JailbreakController.class
+com/project/jailbreak_firewall/JailbreakFirewallApplication.class
+com/project/jailbreak_firewall/service/AnalysisService.class
+com/project/jailbreak_firewall/entity/SecurityLog.class

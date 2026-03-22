@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Jailbreak Firewall | Analysis Report</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">🛡️ JAILBREAK <span class="highlight">FIREWALL</span></div>
+        <div class="nav-links">
+            <a href="index.html">Analyze</a>
+            <a href="about.html">About Project</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div class="verdict-card" id="verdictCard">
+            <h2 id="verdictText">ANALYZING...</h2>
+            <span id="riskBadge" class="risk-badge"></span>
+            <p id="promptDisplay" class="scanned-prompt">"..."</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-box">
+                <h3>🔓 MANIPULATION SCORE</h3>
+                <div class="progress-bar">
+                    <div id="jbBar" class="fill" style="width: 0%"></div>
+                </div>
+                <div class="score-row">
+                    <span id="jbScoreValue" class="score-value">0.00</span>
+                    <span id="jbCategory" class="category-badge">Checking...</span>
+                </div>
+            </div>
+
+            <div class="metric-box">
+                <h3>☣️ HARMFULNESS SCORE</h3>
+                <div class="progress-bar">
+                    <div id="harmBar" class="fill" style="width: 0%"></div>
+                </div>
+                <div class="score-row">
+                    <span id="harmScoreValue" class="score-value">0.00</span>
+                    <span id="harmCategory" class="category-badge">Checking...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation-box">
+            <h3>📋 AI RECOMMENDATION</h3>
+            <pre id="recommendationText" style="white-space: pre-wrap; font-family: inherit; margin: 0; font-size: 0.95rem;">loading...</pre>
+        </div>
+
+        <div class="recommendation-box" style="border-left-color: #d29922;">
+            <h3 style="color: #d29922;">🔍 DETAILED ANALYSIS</h3>
+            <pre id="summaryText" style="white-space: pre-wrap; font-family: inherit; margin: 0; font-size: 0.85rem; color: #8b949e;">loading...</pre>
+        </div>
+
+        <a href="index.html" class="back-btn">← SCAN ANOTHER PROMPT</a>
+    </div>
+
+    <script>
+        window.onload = function () {
+            const storedData = sessionStorage.getItem('analysisResult');
+            if (!storedData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            updateUI(JSON.parse(storedData));
+        }
+
+        function updateUI(data) {
+            document.getElementById('promptDisplay').innerText = `"${data.userPrompt}"`;
+
+            const verdictCard = document.getElementById('verdictCard');
+            const verdictText = document.getElementById('verdictText');
+            const riskBadge = document.getElementById('riskBadge');
+
+            verdictCard.className = 'verdict-card';
+
+            if (data.verdict === 'SAFE') {
+                verdictCard.classList.add('verdict-safe');
+                verdictText.innerText = "✅ SAFE TO PROCESS";
+            } else if (data.verdict === 'BLOCKED') {
+                verdictCard.classList.add('verdict-blocked');
+                verdictText.innerText = "🚫 BLOCKED: SECURITY RISK";
+            } else if (data.verdict === 'ALLOWED') {
+                verdictCard.classList.add('verdict-allowed');
+                verdictText.innerText = "✅ ALLOWED — MANIPULATION DETECTED";
+            } else if (data.verdict === 'FLAGGED') {
+                verdictCard.classList.add('verdict-flagged');
+                verdictText.innerText = "⚠️ FLAGGED FOR HUMAN REVIEW";
+            } else {
+                verdictCard.classList.add('verdict-flagged');
+                verdictText.innerText = "⚠️ " + (data.verdict || "UNKNOWN");
+            }
+
+            // Risk level badge
+            if (data.riskLevel) {
+                riskBadge.innerText = "RISK: " + data.riskLevel;
+                riskBadge.className = 'risk-badge risk-' + (data.riskLevel || 'low').toLowerCase();
+            }
+
+            updateMetric('jbScoreValue', 'jbCategory', 'jbBar', data.jailbreakScore, data.jailbreakCategory);
+            updateMetric('harmScoreValue', 'harmCategory', 'harmBar', data.harmfulnessScore, data.harmfulnessCategory);
+
+            document.getElementById('recommendationText').innerText = data.recommendation || 'N/A';
+            document.getElementById('summaryText').innerText = data.summary || 'No detailed analysis available.';
+        }
+
+        function updateMetric(scoreId, catId, barId, score, category) {
+            document.getElementById(scoreId).innerText = score.toFixed(4);
+            document.getElementById(catId).innerText = category || 'None';
+
+            const bar = document.getElementById(barId);
+            bar.style.width = (score * 100) + "%";
+
+            if (score < 0.3) bar.style.backgroundColor = '#238636';
+            else if (score < 0.62) bar.style.backgroundColor = '#d29922';
+            else bar.style.backgroundColor = '#da3633';
+        }
+    </script>
+</body>
+
+</html>
